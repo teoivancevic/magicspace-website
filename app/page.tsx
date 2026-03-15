@@ -9,19 +9,24 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900 font-sans">
+    <div className="min-h-screen bg-white text-neutral-900 font-sans overflow-x-hidden">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50">
         {/* Mobile bar */}
         <div className="flex lg:hidden items-center justify-between bg-white/95 backdrop-blur-sm px-6 py-4">
           <span className="text-lg font-bold tracking-tight">magicspace</span>
-          <button
-            onClick={() => setMobileNavOpen((o) => !o)}
-            className="text-neutral-600 hover:text-neutral-900 transition-colors"
-            aria-label="Toggle menu"
-          >
-            {mobileNavOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          <div className="flex items-center gap-5">
+            <a href="#waitlist" className="text-sm font-bold px-4 py-1.5 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+              join waitlist
+            </a>
+            <button
+              onClick={() => setMobileNavOpen((o) => !o)}
+              className="text-neutral-600 hover:text-neutral-900 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileNavOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile dropdown */}
@@ -65,39 +70,31 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="min-h-screen flex items-center px-8 pt-24 pb-16 max-w-5xl mx-auto">
-        <div className="flex flex-col lg:flex-row items-center gap-16 w-full">
+      <section className="px-8 pt-40 pb-8 max-w-5xl mx-auto">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-12 w-full">
           {/* Text + CTAs */}
           <div className="flex-1 min-w-0">
-            <h1 className="text-6xl sm:text-7xl font-bold tracking-tight leading-none mb-5" style={{ fontFamily: "var(--font-lato)" }}>
-              Capture curiosity.<br />Build taste.
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-none mb-5" style={{ fontFamily: "var(--font-lato)" }}>
+              capture curiosity,<br />build taste.
             </h1>
             <p className="text-lg text-neutral-500 mb-10">
-              magicspace turns the things you save into a picture of who you&apos;re becoming.
+              screenshot anything with one tap.<br />actually do it.<br />magicspace connects the dots.
             </p>
-            <div className="flex flex-col gap-3 max-w-sm">
+            <div className="max-w-sm">
               <WaitlistForm />
-              <a
-                href="https://chat.whatsapp.com/EScmH37Zoxn1marbHxMlXY"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors text-center"
-              >
-                or join the WhatsApp community →
-              </a>
             </div>
           </div>
 
           {/* Screenshots */}
-          <div className="flex gap-5 shrink-0 items-end">
-            <img src="/screenshot-2.png" alt="magicspace app screenshot" className="rounded-2xl" style={{ height: "380px", width: "216px" }} />
-            <img src="/screenshot-1.png" alt="magicspace app screenshot" className="rounded-2xl" style={{ height: "380px", width: "182px" }} />
+          <div className="flex gap-4 items-end shrink-0">
+            <img src="/screenshot-3.png" alt="magicspace app screenshot" className="rounded-xl w-auto" style={{ height: "320px" }} />
+            <img src="/screenshot-1.png" alt="magicspace app screenshot" className="rounded-xl w-auto" style={{ height: "320px" }} />
           </div>
         </div>
       </section>
 
       {/* manifesto */}
-      <section id="manifesto" className="px-8 py-24">
+      <section id="manifesto" className="px-8 pt-16">
         <div className="max-w-xl mx-auto space-y-0">
           <p className="text-lg leading-relaxed text-neutral-800 font-medium">
             Your camera roll is a graveyard.
@@ -145,10 +142,10 @@ export default function Home() {
       </section>
 
       {/* Waitlist */}
-      <section id="waitlist" className="px-8 py-24 bg-neutral-50">
+      <section id="waitlist" className="px-8 pt-24 pb-24">
         <div className="max-w-sm mx-auto text-center">
-          <p className="text-sm text-neutral-500 mb-6">
-            magicspace is in early beta. Get notified when it opens.
+          <p className="text-base text-neutral-500 mb-6">
+            we&apos;re just getting started.<br />join the waitlist for early access :)
           </p>
           <WaitlistForm />
         </div>
