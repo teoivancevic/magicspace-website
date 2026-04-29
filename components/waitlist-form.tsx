@@ -3,24 +3,36 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Loader2, Check } from "lucide-react";
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+type Status = "idle" | "loading" | "done";
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+
+  const valid = isValidEmail(email);
+
+  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setEmail(e.target.value);
+    if (status === "done") setStatus("idle");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
+    if (!valid || status !== "idle") return;
+    setStatus("loading");
     await fetch("https://submit-form.com/Xvb4DX2w5", {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ email }),
     });
-    setSubmitted(true);
-  }
-
-  if (submitted) {
-    return <p className="text-sm text-neutral-700">You&apos;re on the list.</p>;
+    setEmail("");
+    setStatus("done");
   }
 
   return (
@@ -30,12 +42,22 @@ export function WaitlistForm() {
           type="email"
           placeholder="harry@hogwarts.edu"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
           required
           className="flex-1 h-9 text-base border-none bg-transparent shadow-none focus-visible:ring-0 focus-visible:border-none px-3 rounded-full"
         />
-        <Button type="submit" className="h-9 px-4 text-base font-bold rounded-full shrink-0">
-          join waitlist
+        <Button
+          type="submit"
+          disabled={!valid || status !== "idle"}
+          className="h-9 px-4 text-base font-bold rounded-full shrink-0 w-[130px] transition-opacity"
+        >
+          {status === "loading" ? (
+            <Loader2 className="animate-spin" size={16} />
+          ) : status === "done" ? (
+            <Check size={16} />
+          ) : (
+            "join waitlist"
+          )}
         </Button>
       </form>
       <a
