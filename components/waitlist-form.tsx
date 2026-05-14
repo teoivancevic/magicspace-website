@@ -9,7 +9,7 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-type Status = "idle" | "loading" | "done";
+type Status = "idle" | "loading" | "done" | "error";
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
@@ -19,18 +19,24 @@ export function WaitlistForm() {
 
   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEmail(e.target.value);
-    if (status === "done") setStatus("idle");
+    if (status === "done" || status === "error") setStatus("idle");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid || status !== "idle") return;
+    if (!valid || status === "loading" || status === "done") return;
     setStatus("loading");
-    await fetch("https://submit-form.com/Xvb4DX2w5", {
+    const response = await fetch("/api/waitlist", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim() }),
     });
+
+    if (!response.ok) {
+      setStatus("error");
+      return;
+    }
+
     setEmail("");
     setStatus("done");
   }
@@ -48,13 +54,15 @@ export function WaitlistForm() {
         />
         <Button
           type="submit"
-          disabled={!valid || status !== "idle"}
+          disabled={!valid || status === "loading" || status === "done"}
           className="h-9 px-4 text-base font-bold rounded-full shrink-0 w-[130px] transition-opacity"
         >
           {status === "loading" ? (
             <Loader2 className="animate-spin" size={16} />
           ) : status === "done" ? (
             <Check size={16} />
+          ) : status === "error" ? (
+            "try again"
           ) : (
             "join waitlist"
           )}
