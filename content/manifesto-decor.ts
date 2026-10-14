@@ -33,6 +33,8 @@ export type Illustration = {
   /** also show it on mobile/tablet, centered after the paragraph (or before it with `above`) */
   mobile?: boolean;
   above?: boolean;
+  /** mobile: render at roughly a quarter of the screen width instead of ~38% */
+  small?: boolean;
   entrance?: "pop" | "drop";
   rotate?: number;
   /** draw the soft CSS ground shadow (off for things that fly) */
@@ -70,10 +72,10 @@ export const illustrations: Illustration[] = [
   { image: "falling-screens", paragraph: 2, side: "right", width: 190, top: 70 },
   { image: "seeds", paragraph: 3, side: "left", width: 170, top: -10, entrance: "drop", rotate: -8, shadow: true },
   { image: "pocket", paragraph: 4, side: "left", width: 170, top: -30, shadow: true },
-  { image: "padlock", paragraph: 5, side: "left", width: 150, top: 40, mobile: true, shadow: true },
+  { image: "padlock", paragraph: 5, side: "left", width: 105, top: 10, mobile: true, small: true, shadow: true },
 ];
 
-/** sticky seed → sprout → flower in the right margin, swapping on scroll progress */
+/** sticky seed → sprout → flower in the right margin, looping as stop-motion */
 export const growth = {
   paragraph: 4,
   frames: ["seed", "sprout", "flower"],

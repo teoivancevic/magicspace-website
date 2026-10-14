@@ -38,8 +38,6 @@ function isPullLine(text: string) {
 }
 
 export function ManifestoBody({ children }: { children?: React.ReactNode }) {
-  const growthAnchor = useRef<HTMLDivElement>(null);
-
   return (
     <div className="mx-auto flex max-w-[620px] flex-col gap-7 sm:gap-8">
       {manifesto.paragraphs.map((raw, i) => {
@@ -51,7 +49,6 @@ export function ManifestoBody({ children }: { children?: React.ReactNode }) {
           <div
             key={i}
             className={cn("relative", pull && "my-4 sm:my-6", hasIcons && "pt-16 lg:pt-0")}
-            ref={i === growth.paragraph ? growthAnchor : undefined}
           >
             {hasIcons && (
               <Block>
@@ -79,15 +76,15 @@ export function ManifestoBody({ children }: { children?: React.ReactNode }) {
             {here.map((item, j) => (
               <MarginIllustration key={`${item.image}-${j}`} item={item} index={i * 4 + j} />
             ))}
-            {i === growth.paragraph && <Growth frames={growth.frames} width={growth.width} side={growth.side} anchor={growthAnchor} />}
+            {i === growth.paragraph && <Growth frames={growth.frames} width={growth.width} side={growth.side} />}
 
             {/* mobile and tablet: a few illustrations centered after their paragraph */}
             {here
               .filter((item) => item.mobile && !item.above)
               .map((item, j) => (
-                <MobileIllustration key={`m-${item.image}-${j}`} image={item.image} index={i * 4 + j} shadow={item.shadow} />
+                <MobileIllustration key={`m-${item.image}-${j}`} image={item.image} index={i * 4 + j} shadow={item.shadow} small={item.small} />
               ))}
-            {i === growth.paragraph && <Growth frames={growth.frames} width={growth.width} side={growth.side} anchor={growthAnchor} mobile />}
+            {i === growth.paragraph && <Growth frames={growth.frames} width={growth.width} side={growth.side} mobile />}
 
           </div>
         );
