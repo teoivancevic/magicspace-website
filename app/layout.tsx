@@ -15,8 +15,9 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "magicspace -- by teo.",
-  description: "Capture curiosity. Build taste.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://magicspace.app"),
+  title: "magicspace",
+  description: "your ai pocket for the internet",
   icons: {
     icon: [
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -25,14 +26,14 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
-    title: "magicspace -- by teo.",
-    description: "Capture curiosity. Build taste.",
+    title: "magicspace",
+    description: "your ai pocket for the internet",
     images: [{ url: "/og-image.jpeg", width: 1200, height: 1200 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "magicspace -- by teo.",
-    description: "Capture curiosity. Build taste.",
+    title: "magicspace",
+    description: "your ai pocket for the internet",
     images: ["/og-image.jpeg"],
   },
 };
