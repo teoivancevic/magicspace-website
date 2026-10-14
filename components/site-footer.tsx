@@ -8,8 +8,8 @@ function XIcon({ size = 14 }: { size?: number }) {
   );
 }
 
-const linkClass = "text-xs text-neutral-500 hover:text-neutral-900 transition-colors";
-const iconClass = "text-neutral-500 hover:text-neutral-900 transition-colors";
+const linkClass = "inline-flex min-h-6 items-center px-0.5 py-1 text-xs text-neutral-500 hover:text-neutral-900 transition-colors";
+const iconClass = "inline-flex h-6 w-6 items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors";
 
 export function SiteFooter() {
   return (
@@ -39,7 +39,7 @@ export function SiteFooter() {
         <span className="text-sm font-bold tracking-tight text-neutral-900">magicspace</span>
 
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 justify-self-end">
-          <a href="/old#manifesto" className={linkClass}>manifesto</a>
+          <a href="#manifesto" className={linkClass}>manifesto</a>
           <a href="mailto:ti@teoivancevic.com" className={linkClass}>contact</a>
           <a href="https://go.magicspace.app/privacy" target="_blank" rel="noopener noreferrer" className={linkClass}>privacy</a>
           <a href="https://go.magicspace.app/terms" target="_blank" rel="noopener noreferrer" className={linkClass}>terms</a>

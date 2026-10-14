@@ -57,9 +57,27 @@ export function AuroraBackground() {
       schedule();
     }
 
+    // scroll progress (0..1) drives the blue/purple -> pink/yellow crossfade
+    let scrollRaf = 0;
+    function onScroll() {
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        el!.style.setProperty("--scroll", p.toFixed(3));
+      });
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
     window.addEventListener("pointermove", onMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       if (raf) cancelAnimationFrame(raf);
@@ -72,6 +90,8 @@ export function AuroraBackground() {
       <div className="aurora-blob aurora-blob-2" />
       <div className="aurora-blob aurora-blob-3" />
       <div className="aurora-blob aurora-blob-4" />
+      <div className="aurora-blob aurora-blob-5" />
+      <div className="aurora-blob aurora-blob-6" />
       <div className="aurora-cursor" />
     </div>
   );

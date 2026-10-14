@@ -125,6 +125,12 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 }
 @layer components {
@@ -179,7 +185,8 @@
   --my: 0;
   --cx: 50%;
   --cy: 50%;
-  position: absolute;
+  --scroll: 0;
+  position: fixed;
   inset: 0;
   overflow: hidden;
   background: linear-gradient(180deg, #f6f9ff 0%, #eef3ff 50%, #f7f3ff 100%);
@@ -206,6 +213,7 @@
   translate: calc(var(--mx) * 5vmax) calc(var(--my) * 4vmax);
   animation-name: drift-1;
   animation-duration: 26s;
+  opacity: calc(0.85 - var(--scroll) * 0.7);
 }
 
 .aurora-blob-2 {
@@ -217,6 +225,7 @@
   translate: calc(var(--mx) * -7vmax) calc(var(--my) * 5vmax);
   animation-name: drift-2;
   animation-duration: 30s;
+  opacity: calc(0.85 - var(--scroll) * 0.6);
 }
 
 .aurora-blob-3 {
@@ -239,6 +248,31 @@
   translate: calc(var(--mx) * -10vmax) calc(var(--my) * -8vmax);
   animation-name: drift-4;
   animation-duration: 22s;
+}
+
+/* pink and yellow take over the top of the viewport as the page scrolls */
+.aurora-blob-5 {
+  width: 55vmax;
+  height: 55vmax;
+  top: -18vmax;
+  left: -12vmax;
+  background: radial-gradient(circle at 45% 45%, #ffd9ec 0%, #ffc3dd 45%, rgba(255, 195, 221, 0) 70%);
+  translate: calc(var(--mx) * 5vmax) calc(var(--my) * 4vmax);
+  animation-name: drift-2;
+  animation-duration: 32s;
+  opacity: calc(var(--scroll) * 0.8);
+}
+
+.aurora-blob-6 {
+  width: 48vmax;
+  height: 48vmax;
+  right: -14vmax;
+  top: 0;
+  background: radial-gradient(circle at 55% 45%, #fff3c4 0%, #ffe7a0 45%, rgba(255, 231, 160, 0) 70%);
+  translate: calc(var(--mx) * -7vmax) calc(var(--my) * 5vmax);
+  animation-name: drift-1;
+  animation-duration: 29s;
+  opacity: calc(var(--scroll) * 0.75);
 }
 
 /* soft prismatic glow that trails the cursor */
