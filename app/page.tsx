@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuroraBackground } from "@/components/aurora-background";
 import { LiquidGlassFilter } from "@/components/liquid-glass-filter";
 import { GlassWaitlist } from "@/components/glass-waitlist";
+import { PillFade } from "@/components/pill-fade";
 import { SiteFooter } from "@/components/site-footer";
 import { HeroPocket } from "@/components/pocket-demo";
 import { Manifesto } from "@/components/manifesto";
@@ -38,7 +39,7 @@ export default function Home() {
         {/* everything above the footer shares one container so the sticky pill
             floats at the viewport bottom until it docks under the closing line */}
         <div>
-          <section className="relative flex min-h-dvh flex-col overflow-hidden">
+          <section className="relative z-10 flex min-h-dvh flex-col overflow-hidden">
             <HeroPocket />
             <header className="flex justify-center pt-8">
               <Link href="/" aria-label="magicspace">
@@ -74,6 +75,7 @@ export default function Home() {
           <Manifesto />
           <Faq />
           <Closing />
+          <PillFade />
           <div className="sticky bottom-8 z-20 mt-8 flex justify-center px-6">
             <GlassWaitlist />
           </div>

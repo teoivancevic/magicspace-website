@@ -397,3 +397,219 @@
 @keyframes live-dot-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ---------- claymation manifesto ---------- */
+@layer components {
+  .manifesto {
+    /* long seam: transparent to linen over 60vh, then linen until a short fade out */
+    background: linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--linen) 60vh,
+      var(--linen) calc(100% - 200px),
+      transparent 100%
+    );
+    overflow-x: clip;
+    --clay-scale: 0.85;
+  }
+  @media (min-width: 1440px) {
+    .manifesto {
+      --clay-scale: 1;
+    }
+  }
+
+  /* soft ground shadow, drawn in CSS under cut-out objects */
+  .clay-shadow {
+    position: relative;
+  }
+  .clay-shadow::after {
+    content: "";
+    position: absolute;
+    left: 14%;
+    right: 14%;
+    bottom: -3%;
+    height: 11%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(60, 40, 20, 0.18) 0%, rgba(60, 40, 20, 0.08) 45%, rgba(60, 40, 20, 0) 72%);
+    filter: blur(5px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* floating icons: a loose cloud around one paragraph */
+  .clay-float {
+    position: absolute;
+    left: calc(var(--mx, 0) * 1%);
+    top: calc(var(--my, 0) * 1%);
+    width: calc(var(--size, 52px) * 0.8);
+    height: calc(var(--size, 52px) * 0.8);
+    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
+  }
+  @media (min-width: 1024px) {
+    .clay-float {
+      left: calc(var(--x, 0) * 1%);
+      top: calc(var(--y, 0) * 1%);
+      width: var(--size, 52px);
+      height: var(--size, 52px);
+    }
+  }
+  .clay-float-pop {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scale(0);
+  }
+  [data-in] .clay-float-pop {
+    animation: clay-icon-pop 240ms steps(1, end) calc(var(--i, 0) * 110ms) both;
+  }
+  .clay-float-bob {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  [data-in] .clay-float-bob {
+    animation: clay-bob 5.5s ease-in-out calc(var(--seed, 0) * -5.5s) infinite;
+  }
+  [data-in] .clay-icon-spin {
+    animation: clay-spin 1.8s steps(12, end) infinite;
+  }
+
+  /* margin and mobile illustrations */
+  .clay-margin {
+    position: absolute;
+    pointer-events: none;
+    transform: translateY(var(--py, 0px)) rotate(var(--rot, 0deg));
+  }
+  .clay-mobile,
+  .clay-garden {
+    pointer-events: none;
+  }
+  .clay-enter {
+    opacity: 0;
+  }
+  [data-in] .clay-enter-pop {
+    animation: clay-pop 250ms steps(1, end) both;
+  }
+  [data-in] .clay-enter-drop {
+    animation: clay-drop 320ms steps(1, end) both;
+  }
+  /* gentle boil: three poses at 4fps, tiny angles, no sliding */
+  .is-on .clay-boil {
+    animation: clay-boil 750ms steps(1, end) calc(var(--seed, 0) * -750ms) infinite;
+  }
+  .clay-critter {
+    pointer-events: none;
+  }
+
+  /* fade band behind the waitlist pill */
+  .pill-fade {
+    background: linear-gradient(to top, var(--fade-color, transparent) 0%, transparent 100%);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    -webkit-mask-image: linear-gradient(to top, black 0%, black 35%, transparent 100%);
+    mask-image: linear-gradient(to top, black 0%, black 35%, transparent 100%);
+    transition: opacity 320ms ease, --fade-color 400ms ease;
+  }
+
+  /* marker effects */
+  .marker-wrap {
+    position: relative;
+    display: inline;
+    isolation: isolate;
+  }
+  .marker-svg {
+    position: absolute;
+    left: -0.15em;
+    top: -0.12em;
+    width: calc(100% + 0.3em);
+    height: calc(100% + 0.24em);
+    overflow: visible;
+    pointer-events: none;
+  }
+  .marker-highlight {
+    z-index: 0;
+  }
+  .marker-strike {
+    z-index: 2;
+  }
+  .marker-text {
+    position: relative;
+    z-index: 1;
+  }
+  .marker-svg path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  [data-in] .marker-highlight path {
+    animation: marker-draw 420ms steps(8, end) forwards;
+  }
+  [data-in] .marker-strike path {
+    animation: marker-draw 400ms steps(6, end) var(--delay, 0ms) forwards;
+  }
+}
+
+@property --fade-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@keyframes clay-icon-pop {
+  0% { transform: scale(0); }
+  33.4% { transform: scale(1.15); }
+  66.7%, 100% { transform: scale(1); }
+}
+@keyframes clay-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(2deg); }
+}
+@keyframes clay-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes clay-pop {
+  0% { opacity: 1; transform: scale(0.85); }
+  33.4% { opacity: 1; transform: scale(1.05); }
+  66.7%, 100% { opacity: 1; transform: scale(1); }
+}
+@keyframes clay-drop {
+  0% { opacity: 1; transform: translateY(-40px); }
+  25% { opacity: 1; transform: translateY(-12px); }
+  50% { opacity: 1; transform: translateY(5px); }
+  75%, 100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes clay-boil {
+  0% { transform: rotate(-0.6deg); }
+  33.4% { transform: rotate(0deg); }
+  66.7%, 100% { transform: rotate(0.6deg); }
+}
+@keyframes marker-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clay-float-pop,
+  [data-in] .clay-float-pop {
+    transform: none;
+    animation: none;
+  }
+  [data-in] .clay-float-bob,
+  [data-in] .clay-icon-spin,
+  .is-on .clay-boil {
+    animation: none;
+  }
+  .clay-enter,
+  [data-in] .clay-enter-pop,
+  [data-in] .clay-enter-drop {
+    opacity: 1;
+    animation: none;
+  }
+  .clay-margin {
+    transform: rotate(var(--rot, 0deg));
+  }
+  .marker-svg path,
+  [data-in] .marker-highlight path,
+  [data-in] .marker-strike path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}

@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""
+Cut the raw claymation JPGs in assets/manifesto-raw/ out of their white
+backgrounds and export transparent WebP files to public/manifesto/, plus
+content/manifesto-images.json with the 1x pixel size of every export
+(components use it for width/height and to know which images exist).
+
+Setup (once):
+    python3 -m venv .venv && .venv/bin/pip install rembg onnxruntime pillow numpy
+Run:
+    .venv/bin/python scripts/process-manifesto-images
+
+For each image:
+  1. removes the background and the baked-in ground shadow with rembg (an
+     ML matte), then defringes the edge so there is no white halo
+  2. crops tightly to the object with ~4% padding (icons: square, centered)
+  3. writes <name>.webp (1x) and <name>@2x.webp (2x) at quality 82
+
+The growth frames (seed, sprout, flower) share one crop box so the soil mound
+never jumps when swapping frames, and the seed frame's soil colour is matched
+to the other two. Raw files that do not exist are skipped.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parent.parent
+RAW = ROOT / "assets" / "manifesto-raw"
+OUT = ROOT / "public" / "manifesto"
+MANIFEST = ROOT / "content" / "manifesto-images.json"
+QUALITY = 82
+PAD = 0.04  # padding around the crop, as a fraction of the longer crop edge
+
+# name -> 1x width in px (2x is doubled). Growth frames share a crop box.
+MARGIN = {
+    "graveyard": 320,
+    "falling-screens": 320,
+    "phone-thumb": 320,
+    "seeds": 320,
+    "pocket": 320,
+    "padlock": 320,
+    "garden": 560,
+    "bee": 120,
+    "butterfly": 120,
+}
+GROWTH = {"seed": 320, "sprout": 320, "flower": 320}
+ICONS = {
+    "icon-vinyl": 64,
+    "icon-mic": 64,
+    "icon-painting": 64,
+    "icon-bowl": 64,
+    "icon-jacket": 64,
+    "icon-book": 64,
+    "icon-city": 64,
+}
+
+manifest: dict[str, dict[str, int]] = {}
+
+try:
+    from rembg import new_session, remove
+
+    SESSION = new_session("isnet-general-use")
+except Exception as exc:  # pragma: no cover - depends on local setup
+    print(f"rembg is not available ({exc}). Run the setup line in the script header.")
+    sys.exit(1)
+
+
+def load(name: str) -> Image.Image | None:
+    path = RAW / f"{name}.jpg"
+    if not path.exists():
+        print(f"  skip  {name} (no raw file)")
+        return None
+    return Image.open(path).convert("RGB")
+
+
+def cutout(img: Image.Image) -> np.ndarray:
+    """RGBA float array with the background and ground shadow removed."""
+    rgba = remove(
+        img,
+        session=SESSION,
+        alpha_matting=True,
+        alpha_matting_foreground_threshold=240,
+        alpha_matting_background_threshold=12,
+        alpha_matting_erode_size=8,
+        post_process_mask=True,
+    ).convert("RGBA")
+    arr = np.asarray(rgba).astype(np.float32)
+    rgb, a = arr[..., :3], arr[..., 3:4] / 255.0
+
+    # the matte sometimes keeps a faint, light grey ground shadow: anything that
+    # is nearly white, unsaturated and only partly opaque is shadow, not clay
+    light = rgb.mean(axis=2, keepdims=True)
+    mx = np.maximum(rgb.max(axis=2, keepdims=True), 1)
+    sat = (rgb.max(axis=2, keepdims=True) - rgb.min(axis=2, keepdims=True)) / mx
+    shadow = (light > 200) & (sat < 0.08) & (a < 0.85)
+    a = np.where(shadow, a * np.clip((0.85 - a) * 0.3, 0, 1), a)
+    a = np.where(a < 0.03, 0.0, a)
+
+    # defringe: edge pixels were blended with the white background, un-blend them
+    a_safe = np.maximum(a, 1e-3)
+    unblended = (rgb - (1 - a) * 255.0) / a_safe
+    rgb = np.where(a > 0.02, np.clip(unblended, 0, 255), rgb)
+    return np.concatenate([rgb, a * 255.0], axis=2)
+
+
+def bbox(alpha: np.ndarray, threshold: float = 8.0) -> tuple[int, int, int, int]:
+    ys, xs = np.where(alpha > threshold)
+    if len(xs) == 0:
+        h, w = alpha.shape
+        return 0, 0, w, h
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def pad_box(box, pad=PAD, square=False):
+    x0, y0, x1, y1 = box
+    w, h = x1 - x0, y1 - y0
+    p = int(round(max(w, h) * pad))
+    x0, y0, x1, y1 = x0 - p, y0 - p, x1 + p, y1 + p
+    if square:
+        side = max(x1 - x0, y1 - y0)
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        x0, x1 = int(round(cx - side / 2)), int(round(cx + side / 2))
+        y0, y1 = int(round(cy - side / 2)), int(round(cy + side / 2))
+    return x0, y0, x1, y1
+
+
+def crop(arr: np.ndarray, box) -> Image.Image:
+    """Crop with transparent padding where the box leaves the image."""
+    x0, y0, x1, y1 = box
+    h, w = arr.shape[:2]
+    canvas = np.zeros((y1 - y0, x1 - x0, 4), dtype=np.float32)
+    sx0, sy0, sx1, sy1 = max(x0, 0), max(y0, 0), min(x1, w), min(y1, h)
+    canvas[sy0 - y0 : sy1 - y0, sx0 - x0 : sx1 - x0] = arr[sy0:sy1, sx0:sx1]
+    return Image.fromarray(np.clip(canvas, 0, 255).astype(np.uint8), "RGBA")
+
+
+def export(im: Image.Image, name: str, width: int) -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    for suffix, w in (("", width), ("@2x", width * 2)):
+        h = int(round(im.height * w / im.width))
+        resized = im.resize((w, h), Image.LANCZOS)
+        path = OUT / f"{name}{suffix}.webp"
+        resized.save(path, "WEBP", quality=QUALITY, method=6)
+        print(f"  wrote {path.relative_to(ROOT)}  {w}x{h}")
+        if suffix == "":
+            manifest[name] = {"width": w, "height": h}
+
+
+def process(name: str, width: int, square: bool = False) -> None:
+    img = load(name)
+    if img is None:
+        return
+    arr = cutout(img)
+    export(crop(arr, pad_box(bbox(arr[..., 3]), pad=0.06 if square else PAD, square=square)), name, width)
+
+
+def process_growth(frames: dict[str, int]) -> None:
+    arrs = {}
+    for n in frames:
+        img = load(n)
+        if img is not None:
+            arrs[n] = cutout(img)
+    if not arrs:
+        return
+
+    def soil_colour(n: str) -> np.ndarray:
+        a = arrs[n][..., 3] > 128
+        rgb = arrs[n][..., :3]
+        x0, y0, x1, y1 = bbox(arrs[n][..., 3])
+        m = a.copy()
+        m[: y0 + int((y1 - y0) * 0.55)] = False  # lower part of the box: the mound
+        light = rgb.mean(axis=2)
+        m &= (light > 40) & (light < 170)  # brown clay, not highlights
+        return np.median(rgb[m], axis=0)
+
+    if "seed" in arrs and any(k in arrs for k in ("sprout", "flower")):
+        target = np.mean([soil_colour(k) for k in ("sprout", "flower") if k in arrs], axis=0)
+        gain = np.clip(target / np.maximum(soil_colour("seed"), 1), 0.85, 1.2)
+        print(f"  seed soil gain {np.round(gain, 3)}")
+        arrs["seed"][..., :3] = np.clip(arrs["seed"][..., :3] * gain, 0, 255)
+
+    union = np.zeros(next(iter(arrs.values())).shape[:2], dtype=bool)
+    for arr in arrs.values():
+        union |= arr[..., 3] > 8
+    box = pad_box(bbox(union.astype(np.float32) * 255))
+    for n, width in frames.items():
+        if n in arrs:
+            export(crop(arrs[n], box), n, width)
+
+
+def main() -> int:
+    if not RAW.exists():
+        print(f"no raw folder at {RAW}")
+        return 1
+    print("margin illustrations")
+    for name, width in MARGIN.items():
+        process(name, width)
+    print("growth frames")
+    process_growth(GROWTH)
+    print("inline icons")
+    for name, width in ICONS.items():
+        process(name, width, square=True)
+    MANIFEST.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    print(f"wrote {MANIFEST.relative_to(ROOT)} ({len(manifest)} images)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
