@@ -1,0 +1,74 @@
+{
+  "bee": {
+    "height": 124,
+    "width": 120
+  },
+  "butterfly": {
+    "height": 119,
+    "width": 120
+  },
+  "falling-screens": {
+    "height": 318,
+    "width": 320
+  },
+  "flower": {
+    "height": 322,
+    "width": 320
+  },
+  "garden": {
+    "height": 473,
+    "width": 560
+  },
+  "graveyard": {
+    "height": 304,
+    "width": 320
+  },
+  "icon-book": {
+    "height": 64,
+    "width": 64
+  },
+  "icon-bowl": {
+    "height": 64,
+    "width": 64
+  },
+  "icon-city": {
+    "height": 64,
+    "width": 64
+  },
+  "icon-jacket": {
+    "height": 64,
+    "width": 64
+  },
+  "icon-mic": {
+    "height": 64,
+    "width": 64
+  },
+  "icon-vinyl": {
+    "height": 64,
+    "width": 64
+  },
+  "padlock": {
+    "height": 432,
+    "width": 320
+  },
+  "phone-thumb": {
+    "height": 280,
+    "width": 320
+  },
+  "pocket": {
+    "height": 371,
+    "width": 320
+  },
+  "seed": {
+    "height": 322,
+    "width": 320
+  },
+  "seeds": {
+    "height": 168,
+    "width": 320
+  },
+  "sprout": {
+    "height": 322,
+    "width": 320
+  }
+}
