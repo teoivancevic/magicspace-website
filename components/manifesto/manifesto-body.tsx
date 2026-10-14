@@ -50,7 +50,7 @@ export function ManifestoBody({ children }: { children?: React.ReactNode }) {
         return (
           <div
             key={i}
-            className={cn("relative", pull && "my-4 sm:my-6", hasIcons && "pt-24 lg:pt-0")}
+            className={cn("relative", pull && "my-4 sm:my-6", hasIcons && "pt-16 lg:pt-0")}
             ref={i === growth.paragraph ? growthAnchor : undefined}
           >
             {hasIcons && (
@@ -58,6 +58,12 @@ export function ManifestoBody({ children }: { children?: React.ReactNode }) {
                 <FloatingIcons icons={floatingIcons.icons} />
               </Block>
             )}
+            {/* mobile and tablet: an illustration that sits above its paragraph */}
+            {here
+              .filter((item) => item.mobile && item.above)
+              .map((item, j) => (
+                <MobileIllustration key={`ma-${item.image}-${j}`} image={item.image} index={i * 4 + j} shadow={item.shadow} above />
+              ))}
             <Paragraph
               className={cn(
                 "relative",
@@ -77,17 +83,18 @@ export function ManifestoBody({ children }: { children?: React.ReactNode }) {
 
             {/* mobile and tablet: a few illustrations centered after their paragraph */}
             {here
-              .filter((item) => item.mobile)
+              .filter((item) => item.mobile && !item.above)
               .map((item, j) => (
                 <MobileIllustration key={`m-${item.image}-${j}`} image={item.image} index={i * 4 + j} shadow={item.shadow} />
               ))}
             {i === growth.paragraph && <Growth frames={growth.frames} width={growth.width} side={growth.side} anchor={growthAnchor} mobile />}
 
-            {i === garden.paragraph && <Garden image={garden.image} width={garden.width} critters={garden.critters} />}
           </div>
         );
       })}
       {children}
+      {/* the garden closes the manifesto, below the sign-off */}
+      <Garden image={garden.image} width={garden.width} critters={garden.critters} />
     </div>
   );
 }

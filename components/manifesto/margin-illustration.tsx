@@ -72,8 +72,18 @@ export function MarginIllustration({ item, index }: { item: Illustration; index:
   );
 }
 
-// Mobile placement: centered between paragraphs at ~55% of the screen width.
-export function MobileIllustration({ image, index, shadow }: { image: string; index: number; shadow?: boolean }) {
+// Mobile placement: centered between paragraphs at ~38% of the screen width.
+export function MobileIllustration({
+  image,
+  index,
+  shadow,
+  above,
+}: {
+  image: string;
+  index: number;
+  shadow?: boolean;
+  above?: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const onScreen = useInView(ref, { margin: "20% 0px" });
@@ -81,7 +91,7 @@ export function MobileIllustration({ image, index, shadow }: { image: string; in
   return (
     <div
       ref={ref}
-      className={cn("clay clay-mobile mx-auto mt-10 w-[55vw] max-w-[300px] lg:hidden", onScreen && "is-on")}
+      className={cn("clay clay-mobile mx-auto w-[38vw] max-w-[200px] lg:hidden", above ? "mb-8" : "mt-8", onScreen && "is-on")}
       data-in={seen || undefined}
       style={{ "--seed": ((index * 3) % 7) / 7, "--rot": "0deg" } as React.CSSProperties}
     >

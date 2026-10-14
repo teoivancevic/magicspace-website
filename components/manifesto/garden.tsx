@@ -58,7 +58,7 @@ export function Garden({ image, width, critters }: { image: string; width: numbe
   return (
     <div
       ref={ref}
-      className={cn("clay clay-garden relative mx-auto mt-14 w-full", onScreen && "is-on")}
+      className={cn("clay clay-garden relative mx-auto mt-10 w-[62vw] lg:mt-14 lg:w-full", onScreen && "is-on")}
       data-in={seen || undefined}
       style={{ maxWidth: gardenW, aspectRatio: `${gardenW} / ${gardenH}`, "--seed": 0.6, "--rot": "0deg" } as React.CSSProperties}
       aria-hidden="true"
