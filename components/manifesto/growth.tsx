@@ -7,34 +7,24 @@ import { useInView } from "./use-in-view";
 import { useReducedMotion } from "@/components/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
-// seed → sprout → flower, swapping frames (hard cuts) as the anchor paragraph
-// scrolls past: 0–33% seed, 33–66% sprout, 66–100% flower.
-function useGrowthFrame(anchor: React.RefObject<HTMLElement | null>, frames: number, active: boolean) {
+// seed → sprout → flower as a stop-motion loop while on screen: hard cuts,
+// each frame holding for its own beat, the flower lingering longest.
+const HOLD_MS = [1100, 1100, 2600];
+
+function useGrowthFrame(frames: number, active: boolean) {
   const [frame, setFrame] = useState(0);
   useEffect(() => {
-    const el = anchor.current;
-    if (!el || !active) return;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const r = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // 0 when the block's top enters low in the viewport, 1 when its bottom nears the top
-      const p = (vh * 0.85 - r.top) / (r.height + vh * 0.55);
-      setFrame(Math.min(frames - 1, Math.max(0, Math.floor(p * frames))));
+    if (!active || frames < 2) return;
+    let current = 0;
+    let timer = 0;
+    const tick = () => {
+      current = (current + 1) % frames;
+      setFrame(current);
+      timer = window.setTimeout(tick, HOLD_MS[Math.min(current, HOLD_MS.length - 1)]);
     };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [anchor, frames, active]);
+    timer = window.setTimeout(tick, HOLD_MS[0]);
+    return () => window.clearTimeout(timer);
+  }, [frames, active]);
   return frame;
 }
 
@@ -42,13 +32,11 @@ export function Growth({
   frames,
   width,
   side,
-  anchor,
   mobile,
 }: {
   frames: string[];
   width: number;
   side: "left" | "right";
-  anchor: React.RefObject<HTMLElement | null>;
   mobile?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -56,7 +44,7 @@ export function Growth({
   const seen = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
   const reduced = useReducedMotion();
   const available = frames.filter(hasImage);
-  const frame = useGrowthFrame(anchor, available.length, onScreen && !reduced);
+  const frame = useGrowthFrame(available.length, onScreen && !reduced);
   if (available.length === 0) return null;
   const shown = reduced ? available.length - 1 : frame;
 

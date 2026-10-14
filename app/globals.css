@@ -516,6 +516,7 @@
     position: relative;
     display: inline;
     isolation: isolate;
+    white-space: nowrap; /* a struck or highlighted phrase stays on one line */
   }
   .marker-svg {
     position: absolute;

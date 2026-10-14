@@ -78,11 +78,13 @@ export function MobileIllustration({
   index,
   shadow,
   above,
+  small,
 }: {
   image: string;
   index: number;
   shadow?: boolean;
   above?: boolean;
+  small?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const seen = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
@@ -91,7 +93,12 @@ export function MobileIllustration({
   return (
     <div
       ref={ref}
-      className={cn("clay clay-mobile mx-auto w-[38vw] max-w-[200px] lg:hidden", above ? "mb-8" : "mt-8", onScreen && "is-on")}
+      className={cn(
+        "clay clay-mobile mx-auto lg:hidden",
+        small ? "w-[24vw] max-w-[120px]" : "w-[38vw] max-w-[200px]",
+        above ? "mb-8" : "mt-8",
+        onScreen && "is-on"
+      )}
       data-in={seen || undefined}
       style={{ "--seed": ((index * 3) % 7) / 7, "--rot": "0deg" } as React.CSSProperties}
     >
