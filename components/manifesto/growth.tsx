@@ -78,7 +78,7 @@ export function Growth({
     return (
       <div
         ref={ref}
-        className={cn("clay clay-mobile mx-auto mt-10 w-[55vw] max-w-[300px] lg:hidden", onScreen && "is-on")}
+        className={cn("clay clay-mobile mx-auto mt-8 w-[38vw] max-w-[200px] lg:hidden", onScreen && "is-on")}
         data-in={seen || undefined}
         style={{ "--seed": 0.4, "--rot": "0deg" } as React.CSSProperties}
       >

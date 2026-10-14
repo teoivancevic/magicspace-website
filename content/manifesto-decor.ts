@@ -30,8 +30,9 @@ export type Illustration = {
   width: number;
   /** vertical offset from the paragraph's top, in px (desktop) */
   top?: number;
-  /** also show it on mobile/tablet, centered after the paragraph */
+  /** also show it on mobile/tablet, centered after the paragraph (or before it with `above`) */
   mobile?: boolean;
+  above?: boolean;
   entrance?: "pop" | "drop";
   rotate?: number;
   /** draw the soft CSS ground shadow (off for things that fly) */
@@ -65,7 +66,7 @@ export const handwriting = { paragraph: 6, phrase: "a little more yourself", svg
 // One illustration per side per screen. Sides alternate down the page so two
 // never stack on the same side within a viewport.
 export const illustrations: Illustration[] = [
-  { image: "graveyard", paragraph: 0, side: "left", width: 230, top: -210, mobile: true, shadow: true },
+  { image: "graveyard", paragraph: 0, side: "left", width: 230, top: -210, mobile: true, above: true, shadow: true },
   { image: "falling-screens", paragraph: 2, side: "right", width: 190, top: 70 },
   { image: "seeds", paragraph: 3, side: "left", width: 170, top: -10, entrance: "drop", rotate: -8, shadow: true },
   { image: "pocket", paragraph: 4, side: "left", width: 170, top: -30, shadow: true },

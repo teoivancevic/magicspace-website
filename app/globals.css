@@ -441,8 +441,8 @@
     position: absolute;
     left: calc(var(--mx, 0) * 1%);
     top: calc(var(--my, 0) * 1%);
-    width: calc(var(--size, 52px) * 0.8);
-    height: calc(var(--size, 52px) * 0.8);
+    width: calc(var(--size, 52px) * 0.65);
+    height: calc(var(--size, 52px) * 0.65);
     transform: translate(-50%, -50%) rotate(var(--tilt, 0deg));
   }
   @media (min-width: 1024px) {
