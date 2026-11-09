@@ -3,10 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AtSign, Mail, Loader2, Check, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-function isValidEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
+import { isValidEmail, isValidUsername, normalizeEmail, normalizeUsername } from "@/lib/waitlist";
 
 type Status = "idle" | "loading" | "done" | "error";
 type Check = "idle" | "typing" | "checking" | "available" | "taken";
@@ -17,8 +14,7 @@ const RESERVED = ["admin", "magicspace", "support", "help", "root", "teo"];
 
 // placeholder availability rule until the backend exists
 function fakeAvailability(name: string): Check {
-  const n = name.trim().toLowerCase();
-  if (n.length < 3 || RESERVED.includes(n)) return "taken";
+  if (!isValidUsername(name) || RESERVED.includes(name)) return "taken";
   return "available";
 }
 
@@ -40,8 +36,9 @@ export function GlassWaitlist() {
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  const hasUsername = username.trim().length > 0;
-  const emailValid = isValidEmail(email);
+  const hasUsername = username.length > 0;
+  const usernameValid = isValidUsername(username);
+  const emailValid = isValidEmail(normalizeEmail(email));
   const busy = status === "loading";
 
   function expand() {
@@ -81,19 +78,19 @@ export function GlassWaitlist() {
     e.preventDefault();
 
     if (!expanded) {
-      if (hasUsername) expand();
+      if (usernameValid) expand();
       else usernameRef.current?.focus();
       return;
     }
 
-    if (!emailValid || busy || status === "done") return;
+    if (!usernameValid || !emailValid || busy || status === "done") return;
 
     setStatus("loading");
     try {
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), username: username.trim() }),
+        body: JSON.stringify({ email: normalizeEmail(email), username }),
       });
       if (!response.ok) throw new Error("request failed");
       setStatus("done");
@@ -113,12 +110,12 @@ export function GlassWaitlist() {
   }
 
   function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value.replace(/^@/, "");
+    const value = normalizeUsername(e.target.value);
     setUsername(value);
     if (status === "done" || status === "error") setStatus("idle");
 
     clearCheckTimers();
-    if (value.trim().length === 0) {
+    if (value.length === 0) {
       setCheck("idle");
       return;
     }
@@ -138,7 +135,7 @@ export function GlassWaitlist() {
     if (status === "error") setStatus("idle");
   }
 
-  const buttonDisabled = busy || (expanded && !emailValid);
+  const buttonDisabled = busy || (expanded && (!emailValid || !usernameValid));
 
   let buttonLabel: React.ReactNode = "join waitlist";
   if (expanded) buttonLabel = "submit";
