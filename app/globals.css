@@ -614,3 +614,12 @@
     animation: none;
   }
 }
+
+/* Long-form text pages (privacy policy), rendered from Markdown in content/. */
+.policy { font-size: 1rem; line-height: 1.7; color: var(--color-neutral-700); }
+.policy > * + * { margin-top: 1rem; }
+.policy h2 { margin-top: 2.5rem; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; color: var(--color-neutral-900); }
+.policy ul { padding-left: 1.25rem; list-style: disc; }
+.policy li + li { margin-top: 0.5rem; }
+.policy strong { font-weight: 600; color: var(--color-neutral-900); }
+.policy a { color: var(--color-neutral-900); text-decoration: underline; text-underline-offset: 2px; }
