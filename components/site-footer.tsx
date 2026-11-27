@@ -41,7 +41,7 @@ export function SiteFooter() {
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 justify-self-end">
           <a href="#manifesto" className={linkClass}>manifesto</a>
           <a href="mailto:ti@teoivancevic.com" className={linkClass}>contact</a>
-          <a href="https://go.magicspace.app/privacy" target="_blank" rel="noopener noreferrer" className={linkClass}>privacy</a>
+          <a href="/privacy" className={linkClass}>privacy</a>
           <a href="https://go.magicspace.app/terms" target="_blank" rel="noopener noreferrer" className={linkClass}>terms</a>
         </nav>
       </div>
