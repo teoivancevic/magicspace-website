@@ -1,6 +1,6 @@
 ---
 title: Privacy policy
-updated: November 27, 2026
+updated: November 28, 2026
 ---
 
 This policy explains what MagicSpace collects, how we use it, and the choices you have. It applies to the MagicSpace app for iPhone, including beta builds on TestFlight, and to the magicspace.app website. MagicSpace is made by Teo Ivančević ("MagicSpace", "we", "us").
@@ -14,7 +14,7 @@ The short version: your screenshots live on your phone. When you save one, an AI
 - **What we find in your saves:** the details the AI extracts (a title, a short summary, who posted it, the source link and ideas for what to do next), any note or link you add, and the pocket it goes in.
 - **Threads:** your conversations in MagicSpace, the parts you highlight to follow, and short summaries of each thread. To suggest threads, we also store each save's extracted details as a numeric fingerprint (an embedding).
 - **Settings:** your choices in the app, like which music app to open links in.
-- **Invites:** if a friend's invite brought you here, we keep who invited you. Your own invite link includes your first name, and anyone who opens it can see it.
+- **Invites:** if a friend's invite brought you here, we keep who invited you. If you enter your email on a friend's invite page, we keep it only to link your account to their invite when you sign up. Your own invite link includes your first name, and anyone who opens it can see it.
 - **Feedback and diagnostics:** what you tell us when a save wasn't understood, and, only if you turn on "Share diagnostic details", an extra copy of what we extracted.
 - **Device and usage information:** app version, device type, approximate location from your IP address, and how you use the app, like which screens you open. This never includes what you save or write.
 - **Waitlist:** if you join the waitlist on our website, your email address and the username you choose.
@@ -55,6 +55,7 @@ We keep your information while you have an account.
 - Deleting a save removes its details and any feedback about it from our servers, and its screenshot from the app. A copy in your Photos album stays until you delete it there.
 - Deleting a thread removes its conversation. Your saves stay.
 - Feedback about a save is kept for 90 days. Diagnostic details are kept for 30 days, then deleted automatically.
+- An email you enter on a friend's invite page is deleted once you sign up, or after 30 days if you don't.
 
 To delete your account, email us at [ti@teoivancevic.com](mailto:ti@teoivancevic.com) from the address you sign in with. Within 30 days we delete your account and everything stored with it, including your saves, threads and analytics. Deleting your account from inside the app is coming soon.
 
